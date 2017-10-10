@@ -1,0 +1,30 @@
+version: 1
+errors:
+  100:
+    title: DNS error
+    description:
+      friendly: We could not connect to this host.
+      technical: The host {{code host}} could not be resolved.
+    arguments:
+      host:
+        description: the host name
+  101:
+    title: TCP connection error
+    description:
+      friendly: |
+        We could not access this service. You may need to check your firewall
+        configuration.
+      technical: |
+        The host {{code host}} is not connectable on TCP port {{port}}.
+    arguments:
+      host:
+        description: the host name
+      port:
+        validators:
+          - positive_number
+          - integer
+        description: the TCP port number
+  102:
+    title: Authentication error
+    description: |
+      We could not authenticate to this service with the credentials provided.

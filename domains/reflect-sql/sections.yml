@@ -1,0 +1,6 @@
+version: 1
+sections:
+  10:
+    name: driver
+  11:
+    name: compiler

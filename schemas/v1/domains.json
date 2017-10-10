@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "description": "A list of error domains",
+  "type": "object",
+  "required": ["version", "domains"],
+  "properties": {
+    "version": {
+      "type": "number",
+      "enum": [1]
+    },
+    "domains": {"$ref": "#/definitions/domains"}
+  },
+  "definitions": {
+    "domains": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Z]{2,}$": {"$ref": "#/definitions/domain"}
+      },
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Z]{2,}$"
+      }
+    },
+    "domain": {
+      "type": "object",
+      "required": ["name", "title"],
+      "properties": {
+        "name": {"type": "string"},
+        "title": {"type": "string"},
+        "description": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  }
+}
