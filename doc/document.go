@@ -38,9 +38,10 @@ func (dd *DocumentErrorDescription) UnmarshalYAML(unmarshal func(interface{}) er
 }
 
 type DocumentErrorArgumentFragment struct {
-	Description string   `yaml:"description" json:"description"`
-	Validators  []string `yaml:"validators" json:"validators"`
-	Default     *string  `yaml:"default" json:"default"`
+	Type        string      `yaml:"type" json:"type"`
+	Description string      `yaml:"description" json:"description"`
+	Validators  []string    `yaml:"validators" json:"validators"`
+	Default     interface{} `yaml:"default" json:"default"`
 }
 
 type DocumentErrorArgument DocumentErrorArgumentFragment
@@ -52,8 +53,13 @@ func (dea *DocumentErrorArgument) UnmarshalYAML(unmarshal func(interface{}) erro
 	}
 
 	*dea = DocumentErrorArgument(f)
+
 	if dea.Validators == nil {
 		dea.Validators = []string{}
+	}
+
+	if dea.Type == "" {
+		dea.Type = "string"
 	}
 
 	return nil
@@ -86,6 +92,7 @@ func (de *DocumentError) UnmarshalYAML(unmarshal func(interface{}) error) error 
 	}
 
 	*de = DocumentError(f)
+
 	if de.Arguments == nil {
 		de.Arguments = DocumentErrorArguments{}
 	}

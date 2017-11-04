@@ -82,12 +82,26 @@
         {
           "type": "object",
           "properties": {
+            "type": {"$ref": "#/definitions/errorArgumentType"},
             "description": {"type": "string"},
             "validators": {"$ref": "#/definitions/errorArgumentValidators"},
             "default": {"$ref": "#/definitions/errorArgumentDefault"}
           },
           "additionalProperties": false
         }
+      ]
+    },
+    "errorArgumentType": {
+      "type": "string",
+      "enum": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "list<string>",
+        "list<number>",
+        "list<integer>",
+        "list<boolean>"
       ]
     },
     "errorArgumentValidators": {

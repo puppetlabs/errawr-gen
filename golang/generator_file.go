@@ -2,18 +2,55 @@ package golang
 
 import (
 	"fmt"
+	"go/token"
 	"io"
 	"strings"
 
-	"github.com/serenize/snaker"
-
 	"github.com/dave/jennifer/jen"
 	"github.com/reflect/errawr-gen/doc"
+	"github.com/serenize/snaker"
 )
 
 const (
-	runtime = "github.com/reflect/errawr-go"
+	public  = "github.com/reflect/errawr-go"
+	private = "github.com/reflect/errawr-go/impl"
 )
+
+func argumentGoName(name string) string {
+	candidate := snaker.SnakeToCamelLower(name)
+	if token.Lookup(candidate).IsKeyword() {
+		candidate += "_"
+	}
+
+	return candidate
+}
+
+func argumentType(a *doc.DocumentErrorArgument) jen.Code {
+	if a == nil {
+		return jen.String()
+	}
+
+	switch a.Type {
+	case "string":
+		return jen.String()
+	case "number":
+		return jen.Float64()
+	case "integer":
+		return jen.Int64()
+	case "boolean":
+		return jen.Bool()
+	case "list<string>":
+		return jen.Index().String()
+	case "list<number>":
+		return jen.Index().Float64()
+	case "list<integer>":
+		return jen.Index().Int64()
+	case "list<boolean>":
+		return jen.Index().Bool()
+	default:
+		return jen.String()
+	}
+}
 
 type Error struct {
 	Section    Section
@@ -41,7 +78,7 @@ func (fg *FileGenerator) init() {
 
 	// Create a type for the domain.
 	fg.f.Comment("Domain is the general domain in which all errors in this package belong.")
-	fg.f.Var().Id("Domain").Op("=").Op("&").Qual(runtime, "ErrorDomain").Values(jen.Dict{
+	fg.f.Var().Id("Domain").Op("=").Op("&").Qual(private, "ErrorDomain").Values(jen.Dict{
 		jen.Id("Key"):   jen.Lit(fg.doc.Domain.Key),
 		jen.Id("Title"): jen.Lit(fg.doc.Domain.Title),
 	})
@@ -53,7 +90,7 @@ func (fg *FileGenerator) def(def Error) {
 	builderTypeName := fmt.Sprintf(`%s%sBuilder`, def.Section.GoName, def.GoName)
 
 	fg.f.Commentf(`%s is a builder for %q errors.`, builderTypeName, def.Name)
-	fg.f.Type().Id(builderTypeName).Struct(jen.Id("arguments").Qual(runtime, "ErrorArguments"))
+	fg.f.Type().Id(builderTypeName).Struct(jen.Id("arguments").Qual(private, "ErrorArguments"))
 	fg.f.Line()
 
 	// Create builder methods for all optional arguments.
@@ -73,7 +110,7 @@ func (fg *FileGenerator) def(def Error) {
 		fg.f.Func().Params(
 			jen.Id("b").Op("*").Id(builderTypeName),
 		).Id(withFuncName).Params(
-			jen.Id("value").String(),
+			jen.Id("value").Add(argumentType(a.Argument)),
 		).Op("*").Id(builderTypeName).Block(
 			jen.Id("b").Dot("arguments").Index(jen.Lit(a.Name)).Dot("Set").Call(jen.Id("value")),
 			jen.Return(jen.Id("b")),
@@ -85,7 +122,7 @@ func (fg *FileGenerator) def(def Error) {
 	fg.f.Commentf(`Build creates the error for the code %q from this builder.`, def.Name)
 	fg.f.Func().Params(
 		jen.Id("b").Op("*").Id(builderTypeName),
-	).Id("Build").Params().Qual(runtime, "Error").BlockFunc(func(g *jen.Group) {
+	).Id("Build").Params().Qual(public, "Error").BlockFunc(func(g *jen.Group) {
 		// Add runtime argument validation.
 		for _, a := range def.Definition.OrderedArguments {
 			if a.Argument == nil || len(a.Argument.Validators) == 0 {
@@ -98,19 +135,19 @@ func (fg *FileGenerator) def(def Error) {
 			g.Line()
 		}
 
-		g.Id("description").Op(":=").Op("&").Qual(runtime, "ErrorDescription").Values(jen.Dict{
+		g.Id("description").Op(":=").Op("&").Qual(private, "ErrorDescription").Values(jen.Dict{
 			jen.Id("Friendly"):  jen.Lit(strings.TrimSpace(def.Definition.Description.Friendly)),
 			jen.Id("Technical"): jen.Lit(strings.TrimSpace(def.Definition.Description.Technical)),
 		})
 		g.Line()
 
-		g.Id("err").Op(":=").Op("&").Qual(runtime, "GeneralError").Values(jen.Dict{
-			jen.Id("Domain"):      jen.Id("Domain"),
-			jen.Id("Section"):     jen.Id(fmt.Sprintf(`%sSection`, def.Section.GoName)),
-			jen.Id("Code"):        jen.Lit(def.Name),
-			jen.Id("Title"):       jen.Lit(def.Definition.Title),
-			jen.Id("Description"): jen.Id("description"),
-			jen.Id("Arguments"):   jen.Id("b").Dot("arguments"),
+		g.Id("err").Op(":=").Op("&").Qual(private, "Error").Values(jen.Dict{
+			jen.Id("ErrorDomain"):      jen.Id("Domain"),
+			jen.Id("ErrorSection"):     jen.Id(fmt.Sprintf(`%sSection`, def.Section.GoName)),
+			jen.Id("ErrorCode"):        jen.Lit(def.Name),
+			jen.Id("ErrorTitle"):       jen.Lit(def.Definition.Title),
+			jen.Id("ErrorDescription"): jen.Id("description"),
+			jen.Id("ErrorArguments"):   jen.Id("b").Dot("arguments"),
 		})
 		g.Return(jen.Id("err"))
 	})
@@ -124,20 +161,20 @@ func (fg *FileGenerator) def(def Error) {
 				continue
 			}
 
-			g.Id(a.Name).String()
+			g.Id(argumentGoName(a.Name)).Add(argumentType(a.Argument))
 		}
 	}
 
 	fg.f.Commentf(`%s creates a new error builder for the code %q.`, constructorFuncName, def.Name)
 	fg.f.Func().Id(constructorFuncName).ParamsFunc(params).Op("*").Id(builderTypeName).Block(
 		jen.Return(jen.Op("&").Id(builderTypeName).Values(jen.Dict{
-			jen.Id("arguments"): jen.Qual(runtime, "ErrorArguments").Values(jen.DictFunc(func(d jen.Dict) {
+			jen.Id("arguments"): jen.Qual(private, "ErrorArguments").Values(jen.DictFunc(func(d jen.Dict) {
 				for _, a := range def.Definition.OrderedArguments {
-					d[jen.Lit(a.Name)] = jen.Qual(runtime, "NewErrorArgument").Call(jen.Do(func(s *jen.Statement) {
+					d[jen.Lit(a.Name)] = jen.Qual(private, "NewErrorArgument").Call(jen.Do(func(s *jen.Statement) {
 						if a.Argument.IsOptional() {
-							s.Lit(*a.Argument.Default)
+							s.Lit(a.Argument.Default)
 						} else {
-							s.Id(a.Name)
+							s.Id(argumentGoName(a.Name))
 						}
 					}), jen.LitFunc(func() interface{} {
 						if a.Argument == nil {
@@ -155,7 +192,7 @@ func (fg *FileGenerator) def(def Error) {
 	defaultFuncName := fmt.Sprintf(`New%s%s`, def.Section.GoName, def.GoName)
 
 	fg.f.Commentf(`%s creates a new error with the code %q.`, defaultFuncName, def.Name)
-	fg.f.Func().Id(defaultFuncName).ParamsFunc(params).Qual(runtime, "Error").Block(
+	fg.f.Func().Id(defaultFuncName).ParamsFunc(params).Qual(public, "Error").Block(
 		jen.Return(
 			jen.Id(constructorFuncName).CallFunc(func(g *jen.Group) {
 				for _, a := range def.Definition.OrderedArguments {
@@ -163,7 +200,7 @@ func (fg *FileGenerator) def(def Error) {
 						continue
 					}
 
-					g.Id(a.Name)
+					g.Id(argumentGoName(a.Name))
 				}
 			}).Dot("Build").Call(),
 		),
@@ -177,7 +214,7 @@ func (fg *FileGenerator) section(section Section) {
 
 	fg.f.Commentf(`%s defines a section of errors with the following scope:`, sectionTypeName)
 	fg.f.Comment(section.Definition.Title)
-	fg.f.Var().Id(sectionTypeName).Op("=").Op("&").Qual(runtime, "ErrorSection").Values(jen.Dict{
+	fg.f.Var().Id(sectionTypeName).Op("=").Op("&").Qual(private, "ErrorSection").Values(jen.Dict{
 		jen.Id("Key"):   jen.Lit(section.Name),
 		jen.Id("Title"): jen.Lit(section.Definition.Title),
 	})
