@@ -146,6 +146,7 @@ func (fg *FileGenerator) def(def Error) {
 		g.Line()
 
 		g.Return(jen.Op("&").Qual(private, "Error").Values(jen.Dict{
+			jen.Id("Version"):          jen.Lit(1),
 			jen.Id("ErrorDomain"):      jen.Id("Domain"),
 			jen.Id("ErrorSection"):     jen.Id(fmt.Sprintf(`%sSection`, def.Section.GoName)),
 			jen.Id("ErrorCode"):        jen.Lit(def.Name),
