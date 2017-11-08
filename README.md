@@ -1,11 +1,20 @@
-# reflect-errors
+# errawr-gen
 
-This is a canonical collection of errors used by Reflect applications. The error
-messages in this repository are designed to be surfaced to end users; they
-should not be used only for internal applications.
+errawr-gen generates standard error constructors for errawr-compatible errors.
+It reads a YAML file of errors and outputs code for a specified language.
+Currently only Go is supported.
 
-This repository does not contain any code. Instead, other repositories should
-reference the contents of this repository as a source of truth.
+```
+Usage of errawr-gen:
+  -input-path string
+      the path to read input from (default "-")
+  -output-language string
+      the language to write errors for (default "go")
+  -output-path string
+      the path to write output to (default "-")
+  -package string
+      the package to write
+```
 
 ## Structure
 
@@ -15,76 +24,62 @@ Error codes are constructed by combining a **domain**, a **section**, and an
 **error**. Domains represent a unique part of the Reflect system. They are
 identified by a short abbreviation. For example:
 
-* `RA`: [reflect-api](https://github.com/reflect/reflect-api)
-* `RP`: [reflect-app](https://github.com/reflect/reflect-app)
-* `RG`: [reflect-agent](https://github.com/reflect/reflect-agent)
-* `LRE`: [reflect-reporting](https://github.com/reflect/reflect-reporting)
-* `LSQ`: [reflect-sql](https://github.com/reflect/reflect-sql)
+* `ra`: [reflect-api](https://github.com/reflect/reflect-api)
+* `rp`: [reflect-app](https://github.com/reflect/reflect-app)
+* `rg`: [reflect-agent](https://github.com/reflect/reflect-agent)
+* `lre`: [reflect-reporting](https://github.com/reflect/reflect-reporting)
+* `lsq`: [reflect-sql](https://github.com/reflect/reflect-sql)
 
 In general, error messages from complete applications should use a two-letter
 domain abbreviation starting with `R` (for Reflect, of course). Other libraries
 and tools should use a sensible three-letter abbreviation. (In the example
 above, `LRE` could be read as "**l**ibrary, **re**porting.")
 
-Domains are configured in the `domains.yml` file in the `domains` directory.
-Domain-specific information is contained in a directory that matches the `name`
-key of each domain defined.
-
-Domains can be allocated in advance. If no directory exists to match the name of
-the domain, it is reserved but not processed.
-
 ### Sections
 
-A domain is divided into **sections**. A section is a two-digit identifier that
-is used to represent a logically distinct portion of the domain. Each domain
-will have its own rules and best practices for defining sections, and some may
-have none at all.
+A domain is divided into **sections**. A section represents a logically distinct
+portion of the domain. Each domain will have its own rules and best practices
+for defining sections, and some may have none at all.
 
-Section numbers begin at `10` and continue through `99`. A section number
-starting with `0` is not valid. In a given domain directory, sections are
-configured in the file `sections.yml`. Section-specific information is contained
-in a file that matches the `name` key of each section defined, prefixed with an
-underscore.
-
-For example, the reflect-api domain has a section for authentication errors. In
-`reflect-api/sections.yml`, this section is given the number `14` and the name
-`authentication`. Configuration for the section is located in the file
-`reflect-api/_authentication.yml`.
-
-Like domains, sections can be allocated in advance. If no section configuration
-file exists, no errors are defined for that section.
+For example, the reflect-api domain might define the sections `authentication`
+and `reporting`. Domains should usually be short identifiers constructed using [snake case](https://en.wikipedia.org/wiki/Snake_case).
 
 ### Errors
 
-Each section contains **errors** that are relevant to that section. Errors are
-uniquely identified by three-digit numbers, which begin at `100` and continue
-through `999`. An error identifier starting with `0` is not valid.
-
-Section files contain mappings of error numbers to error definitions. For
-example:
+Each section contains pertinent errors. The input file to the generator defines
+the mapping of a domain to sections and sections to errors. For example:
 
 ```yaml
-errors:
-  101:
-    title: TCP connection error
-    description:
-      friendly: |
-        We could not access this service. You may need to check your firewall
-        configuration.
-      technical: |
-        The host {{code host}} is not connectable on TCP port {{port}}.
-    arguments:
-      host:
-        description: the host name
-      port:
-        validators:
-          - positive_number
-          - integer
-        description: the TCP port number
-  102:
-    title: Authentication error
-    description: |
-      We could not authenticate to this service with the credentials provided.
+version: 1
+domain:
+  key: lsq
+  title: Reflect SQL generation library
+sections:
+  driver:
+    title: Driver errors
+    errors:
+      tcp_connection_error:
+        title: TCP connection error
+        description:
+          friendly: >
+            We could not access this service. You may need to check your
+            firewall configuration.
+          technical: >
+            The host {{code host}} is not connectable on TCP port {{port}}.
+        arguments:
+          host:
+            description: the host name
+          port:
+            type: integer
+            validators:
+              - positive_number
+              - integer
+            description: the TCP port number
+      authentication_error:
+        title: Authentication error
+        description: >
+          We could not authenticate to this service with the credentials
+          provided.
 ```
 
 All errors must have, at minimum, a `title` and a `description`.
@@ -116,9 +111,22 @@ A `description` of an argument may be provided, which can be useful for
 supporting users when trying to understand an error. Generally, the description
 is not surfaced to end users directly.
 
+A `type` may be provided. Types mostly map directly to JSON, but are a bit more
+constrained. Valid types:
+
+* `string`
+* `number`
+* `integer`
+* `boolean`
+* `list<string>`
+* `list<number>`
+* `list<integer>`
+* `list<boolean>`
+
 A `default` may be provided, which will be substituted in the description
 template if no value is provided for the argument when the error is created. If
-this key is not defined, the default value is `null`.
+this key is not defined, a value for the argument must be supplied when the
+error is created.
 
 A list of `validators` may be provided. Validators check that the arguments are
 sane before allowing them to be surfaced and used in the description templates.
@@ -149,7 +157,7 @@ When rendered, an error has the following object structure:
 
 ```json
 {
-  "code": "LSQ10101",
+  "code": "lsq_driver_tcp_connection_error",
   "title": "TCP connection error",
   "description": {
     "friendly": "We could not access this service. You may need to check your firewall configuration.",
@@ -191,4 +199,4 @@ sentences are not necessary.
 
 ## Libraries
 
-* Go: [reflect-errors-go](https://github.com/reflect/reflect-errors-go)
+* Go: [errawr-go](https://github.com/reflect/errawr-go)
