@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "description": "A list of errors",
+  "type": "object",
+  "required": ["version", "domain", "sections"],
+  "properties": {
+    "version": {
+      "type": "number",
+      "enum": [1]
+    },
+    "domain": {"$ref": "#/definitions/domain"},
+    "sections": {"$ref": "#/definitions/sections"}
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "domain": {
+      "type": "object",
+      "required": ["title", "key"],
+      "properties": {
+        "title": {"type": "string"},
+        "key": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "sections": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {"$ref": "#/definitions/section"}
+      },
+      "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "required": ["title", "errors"],
+      "properties": {
+        "title": {"type": "string"},
+        "errors": {"$ref": "#/definitions/errors"}
+      },
+      "additionalProperties": false
+    },
+    "errors": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {"$ref": "#/definitions/error"}
+      },
+      "additionalProperties": false
+    },
+    "error": {
+      "type": "object",
+      "required": ["title", "description"],
+      "properties": {
+        "title": {"type": "string"},
+        "description": {"$ref": "#/definitions/errorDescription"},
+        "arguments": {"$ref": "#/definitions/errorArguments"}
+      },
+      "additionalProperties": false
+    },
+    "errorDescription": {
+      "anyOf": [
+        {"type": "string"},
+        {
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "friendly": {"type": "string"},
+            "technical": {"type": "string"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "errorArguments": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {"$ref": "#/definitions/errorArgument"}
+      },
+      "additionalProperties": false
+    },
+    "errorArgument": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "properties": {
+            "type": {"$ref": "#/definitions/errorArgumentType"},
+            "description": {"type": "string"},
+            "validators": {"$ref": "#/definitions/errorArgumentValidators"},
+            "default": {"$ref": "#/definitions/errorArgumentDefault"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "errorArgumentType": {
+      "type": "string",
+      "enum": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "list<string>",
+        "list<number>",
+        "list<integer>",
+        "list<boolean>"
+      ]
+    },
+    "errorArgumentValidators": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/errorArgumentValidator"},
+      "uniqueItems": true
+    },
+    "errorArgumentValidator": {
+      "type": "string",
+      "enum": [
+        "number",
+        "positive_number",
+        "nonnegative_number",
+        "integer"
+      ]
+    },
+    "errorArgumentDefault": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string"},
+        {"type": "number"},
+        {"type": "boolean"}
+      ]
+    }
+  }
+}
