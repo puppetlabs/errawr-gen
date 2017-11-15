@@ -83,7 +83,7 @@ func schemasV1ErrorsJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "schemas/v1/errors.json", size: 3279, mode: os.FileMode(420), modTime: time.Unix(1509760526, 0)}
+	info := bindataFileInfo{name: "schemas/v1/errors.json", size: 3279, mode: os.FileMode(420), modTime: time.Unix(1510169294, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

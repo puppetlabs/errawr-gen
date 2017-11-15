@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/token"
 	"io"
+	"sort"
 	"strings"
 
 	"github.com/dave/jennifer/jen"
@@ -224,22 +225,42 @@ func (fg *FileGenerator) section(section Section) {
 	})
 	fg.f.Line()
 
-	for name, def := range section.Definition.Errors {
+	names := make([]string, len(section.Definition.Errors))
+
+	i := 0
+	for name := range section.Definition.Errors {
+		names[i] = name
+		i++
+	}
+
+	sort.Strings(names)
+
+	for _, name := range names {
 		fg.def(Error{
 			Section:    section,
 			Name:       name,
 			GoName:     snaker.SnakeToCamel(name),
-			Definition: def,
+			Definition: section.Definition.Errors[name],
 		})
 	}
 }
 
 func (fg *FileGenerator) all() {
-	for name, section := range fg.doc.Sections {
+	names := make([]string, len(fg.doc.Sections))
+
+	i := 0
+	for name := range fg.doc.Sections {
+		names[i] = name
+		i++
+	}
+
+	sort.Strings(names)
+
+	for _, name := range names {
 		fg.section(Section{
 			Name:       name,
 			GoName:     snaker.SnakeToCamel(name),
-			Definition: section,
+			Definition: fg.doc.Sections[name],
 		})
 	}
 }

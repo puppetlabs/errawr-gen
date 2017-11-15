@@ -94,11 +94,13 @@ keys: `friendly`, `technical`. Descriptions are
 the `arguments` mapping. Additionally, several formatting helpers are available,
 roughly following the style of HTML:
 
-| Helper | HTML equivalent |
-| ------ | --------------- |
-| `{{code text}}` | `<code>{{text}}</code>` |
-| `{{em text}}` | `<em>{{text}}</em>` |
-| `{{link url text}}` | `<a href="{{url}}">{{text}}</a>` |
+| Helper | HTML equivalent | Text equivalent |
+| ------ | --------------- | --------------- |
+| `{{em text}}` | `<em>{{text}}</em>` | ``*{{text}}*`` |
+| `{{link url text}}` | `<a href="{{url}}">{{text}}</a>` | ``{{text}} ({{url}})`` |
+| `{{#join list}}#{{@index}}{{/join}}` | `<ul><li>#0</li><li>#1</li></ul>` | ``#1 and #2`` |
+| `{{pre text}}` | `<code>{{text}}</code>` | `` `{{text}}` `` |
+| `{{quote text}}` | `&ldquo;{{text}}&rdquo;` | `"{{text}}"` |
 
 #### Arguments
 
