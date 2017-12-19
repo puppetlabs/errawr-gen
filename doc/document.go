@@ -1,6 +1,8 @@
 package doc
 
-import yaml "gopkg.in/yaml.v2"
+import (
+	yaml "gopkg.in/yaml.v2"
+)
 
 type DocumentVersionFragment struct {
 	Version string `yaml:"version" json:"version"`
@@ -76,11 +78,20 @@ type DocumentErrorArgumentItem struct {
 
 type DocumentErrorArguments map[string]*DocumentErrorArgument
 
+type DocumentErrorHTTPMetadata struct {
+	Status int `json:"status"`
+}
+
+type DocumentErrorMetadata struct {
+	HTTP *DocumentErrorHTTPMetadata `yaml:"http" json:"http"`
+}
+
 type DocumentErrorFragment struct {
 	Title            string                      `json:"title"`
 	Description      *DocumentErrorDescription   `json:"description"`
 	Arguments        DocumentErrorArguments      `json:"arguments"`
 	OrderedArguments []DocumentErrorArgumentItem `json:"-"`
+	Metadata         DocumentErrorMetadata       `json:"metadata"`
 }
 
 type DocumentError DocumentErrorFragment
@@ -102,6 +113,7 @@ func (de *DocumentError) UnmarshalYAML(unmarshal func(interface{}) error) error 
 		Title       string                    `yaml:"title"`
 		Description *DocumentErrorDescription `yaml:"description"`
 		ArgumentsIt yaml.MapSlice             `yaml:"arguments"`
+		Metadata    *DocumentErrorMetadata    `yaml:"metadata"`
 	}
 	if err := unmarshal(&fi); err != nil {
 		return err

@@ -51,7 +51,8 @@
       "properties": {
         "title": {"type": "string"},
         "description": {"$ref": "#/definitions/errorDescription"},
-        "arguments": {"$ref": "#/definitions/errorArguments"}
+        "arguments": {"$ref": "#/definitions/errorArguments"},
+        "metadata": {"$ref": "#/definitions/errorMetadata"}
       },
       "additionalProperties": false
     },
@@ -124,6 +125,26 @@
         {"type": "string"},
         {"type": "number"},
         {"type": "boolean"}
+      ]
+    },
+    "errorMetadata": {
+      "type": "object",
+      "properties": {
+        "http": {"$ref": "#/definitions/errorMetadataHTTP"}
+      },
+      "additionalProperties": false
+    },
+    "errorMetadataHTTP": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": {"type": "integer"}
+          },
+          "additionalProperties": false
+        }
       ]
     }
   }

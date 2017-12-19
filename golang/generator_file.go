@@ -154,6 +154,13 @@ func (fg *FileGenerator) def(def Error) {
 			jen.Id("ErrorTitle"):       jen.Lit(def.Definition.Title),
 			jen.Id("ErrorDescription"): jen.Id("description"),
 			jen.Id("ErrorArguments"):   jen.Id("b").Dot("arguments"),
+			jen.Id("ErrorMetadata"): jen.Op("&").Qual(private, "ErrorMetadata").Values(jen.DictFunc(func(d jen.Dict) {
+				if def.Definition.Metadata.HTTP != nil {
+					d[jen.Id("HTTPErrorMetadata")] = jen.Op("&").Qual(private, "HTTPErrorMetadata").Values(jen.Dict{
+						jen.Id("ErrorStatus"): jen.Lit(def.Definition.Metadata.HTTP.Status),
+					})
+				}
+			})),
 		}))
 	})
 	fg.f.Line()
