@@ -91,6 +91,13 @@ func (fg *FileGenerator) init() {
 }
 
 func (fg *FileGenerator) def(def Error) {
+	// We may want to use the code internally, so create it here.
+	codeTypeName := fmt.Sprintf(`%s%sCode`, def.Section.GoName, def.GoName)
+
+	fg.f.Commentf(`%s is the code for an instance of %q.`, codeTypeName, def.Name)
+	fg.f.Const().Id(codeTypeName).Op("=").Lit(fmt.Sprintf(`%s_%s_%s`, fg.doc.Domain.Key, def.Section.Name, def.Name))
+	fg.f.Line()
+
 	// Create the builder type.
 	builderTypeName := fmt.Sprintf(`%s%sBuilder`, def.Section.GoName, def.GoName)
 
