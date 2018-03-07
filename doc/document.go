@@ -88,6 +88,7 @@ type DocumentErrorMetadata struct {
 
 type DocumentErrorFragment struct {
 	Title            string                      `json:"title"`
+	Sensitivity      string                      `json:"sensitivity,omitempty"`
 	Description      *DocumentErrorDescription   `json:"description"`
 	Arguments        DocumentErrorArguments      `json:"arguments"`
 	OrderedArguments []DocumentErrorArgumentItem `json:"-"`
@@ -111,6 +112,7 @@ func (de *DocumentError) UnmarshalYAML(unmarshal func(interface{}) error) error 
 	// Extract the iteration order.
 	var fi struct {
 		Title       string                    `yaml:"title"`
+		Sensitivity string                    `yaml:"sensitivity"`
 		Description *DocumentErrorDescription `yaml:"description"`
 		ArgumentsIt yaml.MapSlice             `yaml:"arguments"`
 		Metadata    *DocumentErrorMetadata    `yaml:"metadata"`
