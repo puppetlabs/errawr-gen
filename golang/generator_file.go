@@ -57,6 +57,8 @@ func errorSensitivity(sensitivity string) jen.Code {
 	switch sensitivity {
 	case "all":
 		return jen.Qual(public, "ErrorSensitivityAll")
+	case "bug":
+		return jen.Qual(public, "ErrorSensitivityBug")
 	case "edge":
 		return jen.Qual(public, "ErrorSensitivityEdge")
 	default:
