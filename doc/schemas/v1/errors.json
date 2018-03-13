@@ -50,11 +50,22 @@
       "required": ["title", "description"],
       "properties": {
         "title": {"type": "string"},
+        "sensitivity": {"$ref": "#/definitions/errorSensitivity"},
         "description": {"$ref": "#/definitions/errorDescription"},
         "arguments": {"$ref": "#/definitions/errorArguments"},
         "metadata": {"$ref": "#/definitions/errorMetadata"}
       },
       "additionalProperties": false
+    },
+    "errorSensitivity": {
+      "type": "string",
+      "enum": [
+        "none",
+        "edge",
+        "bug",
+        "all"
+      ],
+      "default": "none"
     },
     "errorDescription": {
       "anyOf": [

@@ -53,6 +53,19 @@ func argumentType(a *doc.DocumentErrorArgument) jen.Code {
 	}
 }
 
+func errorSensitivity(sensitivity string) jen.Code {
+	switch sensitivity {
+	case "all":
+		return jen.Qual(public, "ErrorSensitivityAll")
+	case "bug":
+		return jen.Qual(public, "ErrorSensitivityBug")
+	case "edge":
+		return jen.Qual(public, "ErrorSensitivityEdge")
+	default:
+		return jen.Qual(public, "ErrorSensitivityNone")
+	}
+}
+
 type Error struct {
 	Section    Section
 	Name       string
@@ -168,6 +181,7 @@ func (fg *FileGenerator) def(def Error) {
 					})
 				}
 			})),
+			jen.Id("ErrorSensitivity"): errorSensitivity(def.Definition.Sensitivity),
 		}))
 	})
 	fg.f.Line()
