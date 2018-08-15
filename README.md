@@ -21,19 +21,15 @@ Usage of errawr-gen:
 ### Domains
 
 Error codes are constructed by combining a **domain**, a **section**, and an
-**error**. Domains represent a unique part of the Reflect system. They are
-identified by a short abbreviation. For example:
+**error**. Domains represent a unique project or namespace. They are identified
+by a short abbreviation. For example:
 
-* `ra`: [reflect-api](https://github.com/reflect/reflect-api)
-* `rp`: [reflect-app](https://github.com/reflect/reflect-app)
-* `rg`: [reflect-agent](https://github.com/reflect/reflect-agent)
-* `lre`: [reflect-reporting](https://github.com/reflect/reflect-reporting)
-* `lsq`: [reflect-sql](https://github.com/reflect/reflect-sql)
+* `idfc`: [insights-dataflow/controller](https://github.com/puppetlabs/insights-dataflow/tree/development/controller)
+* `lidfp`: [insights-dataflow/proto](https://github.com/puppetlabs/insights-dataflow/tree/development/proto)
 
-In general, error messages from complete applications should use a two-letter
-domain abbreviation starting with `R` (for Reflect, of course). Other libraries
-and tools should use a sensible three-letter abbreviation. (In the example
-above, `LRE` could be read as "**l**ibrary, **re**porting.")
+In general, error messages from complete applications should use an obvious
+four-letter abbreviation. Other libraries and tools should can use a longer
+abbreviation if necessary. (In the example above, `LIDFP` is "**l**ibrary for **i**nsights **d**ata**f**low **p**rotocol").
 
 ### Sections
 
@@ -41,8 +37,9 @@ A domain is divided into **sections**. A section represents a logically distinct
 portion of the domain. Each domain will have its own rules and best practices
 for defining sections, and some may have none at all.
 
-For example, the reflect-api domain might define the sections `authentication`
-and `reporting`. Domains should usually be short identifiers constructed using [snake case](https://en.wikipedia.org/wiki/Snake_case).
+For example, the insights-dataflow/controller domain might define the sections
+`model` and `server`. Sections should usually be short identifiers constructed
+using [snake case](https://en.wikipedia.org/wiki/Snake_case).
 
 ### Errors
 
@@ -146,9 +143,9 @@ used instead. The following validators are available:
 
 ### Error codes
 
-An **error code** is the concatenation of the code's domain, section, and
-numerical identifier. For example, code `162` of the reflect-api authentication
-domain would be represented as `RA14162` to an end user.
+An **error code** is the concatenation of the code's domain, section, and name,
+separated by underscores. In the example above, the error code is
+`lsq_driver_tcp_connection_error`.
 
 These representations are unique within the entire error collection and can be
 used by support team members to easily identify a specific error.
@@ -191,7 +188,7 @@ always end with a punctuation mark, generally a period.
 Use of the passive voice ("the account is deactivated") should be avoided where
 possible. It may occur in technical descriptions, but should be used sparingly
 in friendly descriptions as users tend to find it inaccessible. In friendly
-descriptions, use the pronoun "we" to refer to Reflect as a collective, and the
+descriptions, use the pronoun "we" to refer to Puppet as a collective, and the
 pronoun "you" to refer to the end user when they can take action on their own.
 
 Never use gendered pronouns in any part of error definitions.
@@ -201,4 +198,4 @@ sentences are not necessary.
 
 ## Libraries
 
-* Go: [errawr-go](https://github.com/reflect/errawr-go)
+* Go: [errawr-go](https://github.com/puppetlabs/errawr-go)

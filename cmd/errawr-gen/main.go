@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/reflect/errawr-gen/doc"
-	"github.com/reflect/errawr-gen/golang"
+	"github.com/puppetlabs/errawr-gen/doc"
+	"github.com/puppetlabs/errawr-gen/golang"
 	"github.com/xeipuuv/gojsonschema"
 	yaml "gopkg.in/yaml.v2"
 )

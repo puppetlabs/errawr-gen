@@ -8,13 +8,13 @@ import (
 	"strings"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/reflect/errawr-gen/doc"
+	"github.com/puppetlabs/errawr-gen/doc"
 	"github.com/serenize/snaker"
 )
 
 const (
-	public  = "github.com/reflect/errawr-go"
-	private = "github.com/reflect/errawr-go/impl"
+	public  = "github.com/puppetlabs/errawr-go"
+	private = "github.com/puppetlabs/errawr-go/impl"
 )
 
 func argumentGoName(name string) string {

@@ -3,7 +3,7 @@ package golang
 import (
 	"io"
 
-	"github.com/reflect/errawr-gen/doc"
+	"github.com/puppetlabs/errawr-gen/doc"
 )
 
 type Generator struct{}
