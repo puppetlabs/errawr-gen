@@ -152,9 +152,28 @@
           "type": "object",
           "required": ["status"],
           "properties": {
-            "status": {"type": "integer"}
+            "status": {"type": "integer"},
+            "headers": {"$ref": "#/definitions/errorMetadataHTTPHeaders"}
           },
           "additionalProperties": false
+        }
+      ]
+    },
+    "errorMetadataHTTPHeaders": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {"$ref": "#/definitions/errorMetadataHTTPHeader"}
+      },
+      "additionalProperties": false
+    },
+    "errorMetadataHTTPHeader": {
+      "anyOf": [
+        {"type": "string"},
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       ]
     }

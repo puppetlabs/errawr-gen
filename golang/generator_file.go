@@ -178,6 +178,15 @@ func (fg *FileGenerator) def(def Error) {
 				if def.Definition.Metadata.HTTP != nil {
 					d[jen.Id("HTTPErrorMetadata")] = jen.Op("&").Qual(private, "HTTPErrorMetadata").Values(jen.Dict{
 						jen.Id("ErrorStatus"): jen.Lit(def.Definition.Metadata.HTTP.Status),
+						jen.Id("ErrorHeaders"): jen.Qual(private, "HTTPErrorMetadataHeaders").Values(jen.DictFunc(func(d jen.Dict) {
+							for _, h := range def.Definition.Metadata.HTTP.OrderedHeaders {
+								d[jen.Lit(h.Name)] = jen.Index().String().ValuesFunc(func(g *jen.Group) {
+									for _, v := range h.Values {
+										g.Lit(v)
+									}
+								})
+							}
+						})),
 					})
 				}
 			})),

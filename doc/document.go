@@ -78,8 +78,69 @@ type DocumentErrorArgumentItem struct {
 
 type DocumentErrorArguments map[string]*DocumentErrorArgument
 
-type DocumentErrorHTTPMetadata struct {
-	Status int `json:"status"`
+type DocumentErrorHTTPMetadataHeader []string
+
+func (dehmh *DocumentErrorHTTPMetadataHeader) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var f []string
+	if err := unmarshal(&f); err != nil {
+		var s string
+		if err := unmarshal(&s); err != nil {
+			return err
+		}
+
+		*dehmh = []string{s}
+	} else {
+		*dehmh = f
+	}
+
+	return nil
+}
+
+type DocumentErrorHTTPMetadataHeaderItem struct {
+	Name   string
+	Values DocumentErrorHTTPMetadataHeader
+}
+
+type DocumentErrorHTTPMetadataHeaders map[string]DocumentErrorHTTPMetadataHeader
+
+type DocumentErrorHTTPMetadataFragment struct {
+	Status         int                                   `json:"status"`
+	Headers        DocumentErrorHTTPMetadataHeaders      `json:"headers,omitempty"`
+	OrderedHeaders []DocumentErrorHTTPMetadataHeaderItem `json:"-"`
+}
+
+type DocumentErrorHTTPMetadata DocumentErrorHTTPMetadataFragment
+
+func (dehm *DocumentErrorHTTPMetadata) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var f DocumentErrorHTTPMetadataFragment
+	if err := unmarshal(&f); err != nil {
+		return err
+	}
+
+	*dehm = DocumentErrorHTTPMetadata(f)
+
+	if dehm.Headers == nil {
+		dehm.Headers = DocumentErrorHTTPMetadataHeaders{}
+	}
+
+	var fi struct {
+		Status    int           `yaml:"status"`
+		HeadersIt yaml.MapSlice `yaml:"headers"`
+	}
+	if err := unmarshal(&fi); err != nil {
+		return err
+	}
+
+	for _, item := range fi.HeadersIt {
+		name := item.Key.(string)
+
+		dehm.OrderedHeaders = append(dehm.OrderedHeaders, DocumentErrorHTTPMetadataHeaderItem{
+			Name:   name,
+			Values: dehm.Headers[name],
+		})
+	}
+
+	return nil
 }
 
 type DocumentErrorMetadata struct {
