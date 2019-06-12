@@ -1,0 +1,54 @@
+version: 1
+domain:
+  key: test_basic
+  title: Test Errors
+sections:
+  #
+  # Cryptography errors
+  #
+  crypto:
+    title: Cryptography errors
+    errors:
+      key_not_found_error:
+        title: Key not found
+        description: >
+          The key file {{pre path}} does not exist.
+        arguments:
+          path:
+            description: the path to the key file
+      key_read_error:
+        title: Key read error
+        description: >
+          The key file {{pre path}} could not be read.
+        arguments:
+          path:
+            description: the path to the key file
+      key_format_error:
+        title: Key format error
+        description: >
+          The key file {{pre path}} does not contain a valid encryption key.
+        arguments:
+          path:
+            description: the path to the key file
+      decryption_error:
+        title: Decryption error
+        description: >
+          The data passed to the decryption routine is not valid.
+      unknown_error:
+        title: Unknown error
+        description: >
+          An unexpected error occurred in cryptographic routines.
+
+  #
+  # DB interface errors
+  #
+  db:
+    title: DB interface errors
+    errors:
+      batch_conflict_error:
+        title: Batch conflict
+        description: >
+          The transaction could not be committed due to a data conflict.
+        metadata:
+          http:
+            status: 409

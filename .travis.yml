@@ -1,0 +1,17 @@
+language: go
+go:
+- 1.11.x
+- 1.12.x
+script:
+- go test -v ./...
+jobs:
+  include:
+  - stage: deploy
+    deploy:
+      provider: script
+      skip_cleanup: true
+      script: sh -c 'npm install && npx semantic-release'
+env:
+  global:
+  - GO111MODULE=on
+  - secure: WMMAJKpb6laSpVFmGECCa8nSw3i65amnktUSe2KHfAbEnM4zt5XSgiOBDEosn+op4LoUkNOQw19PHeVUqnz4P6BFWCd0V66QRbS+bu95K6+9zPPw1TjyL3qqiNGKhV2TJeBYDYAK6JHFm/XkabT3+BUhUZTV90Bk8ooXBjPkdi47yVyMJMOrZpFfDFP+62iuXUGr0UE+ifGzhuHi1XqZf8NVx3cXleISwy7UNHb/AW2BL2KLU3IC9U9ywTB1H1ccW9YQ3YjdFvqc10AjJnHkftCTvLVzuI6olz07N2cdLcjOpjAzPrcbkO0YiZZAH3JdsubSNLpdF8oISc3MqYlgat+CNNdRO/Uc/uTBzqRuYICV8R9TVI1gWm0NDrevFNpO3lzR2G2KINROXxo4Mjz3L34VMC5ylJkp+h4GMaRa2CFs3vv8BoltkXFZA65rP6IFLBmdr4sDmgip+17AEUcWTzjrIsWfbGwM9a/mLlNcyZruRlqliABKkWah+Ejo2H/0fKYOWSW5fVfxURQK3qtYS+n4l4egfuRgRQeBM53OQCQBtjwylxpT4qLB5NBEM5KgX93676f4LI0dQzsxj67HRWfMIgNI75a4WMJCuRCW7Y4VXqENTau9F4IOTgJJNS2kxp6UR3pZwML+uIrbYVn0tE/zcVKQamh82PKoSE0mk3E=
