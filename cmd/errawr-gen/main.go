@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/puppetlabs/errawr-gen/generator"
+	"github.com/puppetlabs/errawr-gen/pkg/generator"
 )
 
 var (
