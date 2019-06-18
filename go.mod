@@ -5,7 +5,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/puppetlabs/errawr-go/v2 v2.0.1
+	github.com/puppetlabs/errawr-go/v2 v2.1.0
 	github.com/serenize/snaker v0.0.0-20171002133257-c7a77c38c398
 	github.com/shurcooL/httpfs v0.0.0-20190527155220-6a4d4a70508b // indirect
 	github.com/shurcooL/vfsgen v0.0.0-20181202132449-6a9ea43bcacd
