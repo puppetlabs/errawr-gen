@@ -1,5 +1,7 @@
 module github.com/puppetlabs/errawr-gen
 
+go 1.13
+
 require (
 	github.com/dave/jennifer v0.0.0-20171004025221-97587ff16f68
 	github.com/kr/pretty v0.1.0 // indirect

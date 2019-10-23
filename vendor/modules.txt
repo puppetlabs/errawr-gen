@@ -6,13 +6,13 @@ github.com/davecgh/go-spew/spew
 github.com/pmezard/go-difflib/difflib
 # github.com/puppetlabs/errawr-go/v2 v2.1.0
 github.com/puppetlabs/errawr-go/v2/pkg/errawr
-github.com/puppetlabs/errawr-go/v2/pkg/impl
 github.com/puppetlabs/errawr-go/v2/pkg/golang
+github.com/puppetlabs/errawr-go/v2/pkg/impl
 # github.com/reflect/raymond v0.0.0-20190227215356-5fa3955f4a50
 github.com/reflect/raymond
 github.com/reflect/raymond/ast
-github.com/reflect/raymond/parser
 github.com/reflect/raymond/lexer
+github.com/reflect/raymond/parser
 # github.com/serenize/snaker v0.0.0-20171002133257-c7a77c38c398
 github.com/serenize/snaker
 # github.com/shurcooL/httpfs v0.0.0-20190527155220-6a4d4a70508b

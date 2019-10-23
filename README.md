@@ -24,12 +24,12 @@ Error codes are constructed by combining a **domain**, a **section**, and an
 **error**. Domains represent a unique project or namespace. They are identified
 by a short abbreviation. For example:
 
-* `idfc`: [insights-dataflow/controller](https://github.com/puppetlabs/insights-dataflow/tree/development/controller)
-* `lidfp`: [insights-dataflow/proto](https://github.com/puppetlabs/insights-dataflow/tree/development/proto)
+* `nsdk`: [nebula-sdk](https://github.com/puppetlabs/nebula-sdk)
+* `hsch`: [horsehead/scheduler](https://github.com/puppetlabs/horsehead/tree/master/scheduler/errors)
 
 In general, error messages from complete applications should use an obvious
 four-letter abbreviation. Other libraries and tools should can use a longer
-abbreviation if necessary. (In the example above, `LIDFP` is "**l**ibrary for **i**nsights **d**ata**f**low **p**rotocol").
+abbreviation if necessary. (In the example above, `hsch` is "**H**orsehead **sch**eduler".)
 
 ### Reserved domains
 
@@ -58,7 +58,7 @@ the mapping of a domain to sections and sections to errors. For example:
 version: 1
 domain:
   key: lsq
-  title: Reflect SQL generation library
+  title: SQL query generation library
 sections:
   driver:
     title: Driver errors
