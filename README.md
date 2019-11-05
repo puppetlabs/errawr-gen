@@ -147,6 +147,32 @@ used instead. The following validators are available:
 | `nonnegative_number` | Like `number`, but also checks that the argument is at least 0. |
 | `integer` | Asserts that the argument is an integer. |
 
+#### Sensitivity
+
+An error may have environment-specific sensitivity, which allows fine-grained
+control over whether the details (description, arguments, and causes) of an
+error are exported to external consumers. Sensitivities are integers that range
+from 0 (least sensitive) to 1000 (most sensitive). Currently, only four
+sensitivities are defined:
+
+| Name | Key | Value | Description |
+|------|-----|-------|-------------|
+| None | `none` | `0` | These errors can be presented anywhere, even to third parties. |
+| Edge | `edge` | `100` | These errors are restricted to components of the same system. Edge-sensitive errors cross error domains, but are not propagated to third-party components. |
+| Bug | `bug` | `200` | These errors can reasonably be displayed in certain intra-system interfaces, but are more restricted than edge errors. |
+| All | `all` | `1000` | These errors may only be displayed within the same error domain. |
+
+An error's sensitivity can be changed at runtime, but can only be increased. The
+initial sensitivity for an error can be declared in the YAML definition:
+
+```yaml
+# ...
+restricted_error:
+  title: A very secret error
+  sensitivity: all
+  # ...
+```
+
 ## Representation
 
 An **error identifier** is the concatenation of the error's domain, section, and
